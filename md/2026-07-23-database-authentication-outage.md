@@ -1,8 +1,6 @@
 # Postmortem: Database Authentication Outage & Server Creation Failure
 
-**Date:** July 23, 2026
-**Duration:** ~05:30 – 13:19 (Paris time), ~7h49 total
-**Status:** Resolved
+**Date:** July 23, 2026 | **Duration:** ~05:30 – 13:19 (Paris time), ~7h49 total | **Status:** Resolved
 
 ## Summary
 
