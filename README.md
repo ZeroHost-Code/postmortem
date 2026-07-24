@@ -13,7 +13,7 @@ Better Stack (our status page provider) doesn't support built-in postmortems. Th
 Postmortems are organized by date and stored as Markdown files:
 
 ```
-/YYYY-MM-DD-short-title.md
+/md/YYYY-MM-DD-short-title.md
 ```
 
 ## Status page
