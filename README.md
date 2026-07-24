@@ -1,4 +1,4 @@
-# ZeroHost — Postmortems
+Postmortems
 
 Official postmortems for incidents affecting ZeroHost (dashboard, Hydrodactyl, homepage, and related infrastructure).
 
@@ -13,21 +13,8 @@ Better Stack (our status page provider) doesn't support built-in postmortems. Th
 Postmortems are organized by date and stored as Markdown files:
 
 ```
-/postmortems/YYYY-MM-DD-short-title.md
+/YYYY-MM-DD-short-title.md
 ```
-
-## Postmortem template
-
-Each postmortem follows this structure:
-
-- **Summary** — brief description of the incident
-- **Impact** — services and users affected, duration
-- **Timeline** — key events in chronological order (UTC)
-- **Root Cause** — technical explanation of what went wrong
-- **Resolution** — how the incident was resolved
-- **Corrective Actions** — steps taken or planned to prevent recurrence
-
-See [`TEMPLATE.md`](./TEMPLATE.md) to start a new postmortem.
 
 ## Status page
 
