@@ -1,0 +1,64 @@
+name: Daily Release
+
+on:
+  schedule:
+    # Tous les jours à 3h du matin (heure de Paris = UTC+1 ou UTC+2 selon DST)
+    # Ici réglé sur 3h UTC — ajuste si tu veux coller pile à l'heure FR
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Générer le tag du jour
+        id: vars
+        run: |
+          TODAY=$(date +'%Y.%m.%d')
+          echo "tag=$TODAY" >> "$GITHUB_OUTPUT"
+
+      - name: Récupérer le tag précédent
+        id: prev
+        run: |
+          # dernier tag existant (hors celui qu'on va créer)
+          PREV_TAG=$(git tag --sort=-creatordate | head -n 1 || true)
+          echo "prev_tag=$PREV_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Créer le tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.vars.outputs.tag }}
+          git push origin ${{ steps.vars.outputs.tag }}
+
+      - name: Construire la description
+        id: body
+        run: |
+          REPO="${{ github.repository }}"
+          NEW_TAG="${{ steps.vars.outputs.tag }}"
+          PREV_TAG="${{ steps.prev.outputs.prev_tag }}"
+
+          if [ -n "$PREV_TAG" ]; then
+            COMPARE_LINK="https://github.com/$REPO/compare/${PREV_TAG}...${NEW_TAG}"
+          else
+            COMPARE_LINK="https://github.com/$REPO/commits/${NEW_TAG}"
+          fi
+
+          echo "**Full Changelog**: $COMPARE_LINK" > release_body.md
+          cat release_body.md
+
+      - name: Créer la release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: ${{ steps.vars.outputs.tag }}
+          body_path: release_body.md
+          make_latest: true
