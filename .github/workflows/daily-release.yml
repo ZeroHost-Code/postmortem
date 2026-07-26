@@ -58,9 +58,8 @@ jobs:
 
       - name: Créer la release
         uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           tag_name: ${{ steps.vars.outputs.tag }}
           name: ${{ steps.vars.outputs.tag }}
           body_path: release_body.md
