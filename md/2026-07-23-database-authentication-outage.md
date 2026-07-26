@@ -1,6 +1,6 @@
 # Postmortem: Database Authentication Outage & Server Creation Failure
 
-**Date:** July 23, 2026 | **Duration:** ~05:30 – 13:19 (Paris time), ~7h49 total | **Status:** Resolved
+**Date:** July 23, 2026 | **Duration:** ~15:30 – 13:19 (Paris time), ~21h49 total | **Status:** Resolved
 
 ## Summary
 
@@ -10,13 +10,14 @@ An attempt to fix a server creation issue on the preprod dashboard led to unrela
 
 | Service | Status | Duration |
 |---|---|---|
-| Server creation | Down | ~05:30 – 13:19 (~7h49) |
+| Server creation | Down | ~15:30 (July 22) – 13:19 (July 23) (~21h49) |
 | Dashboard login (preprod & prod) | Down | ~06:01 – 13:15 (~7h14) |
 | Account creation | Down | ~06:01 – 13:15 (~7h14) |
 
 ## Timeline (Paris time)
 
-- **~05:30** — Server creation starts failing. Team begins investigating, suspecting the issue originates in the preprod dashboard.
+- **~15:30** — Due to a configuration change in Wings intended to enhance VPS security, server creation is failing during installation.
+- **~05:30** — The creation issue has been detected. Team begins investigating, suspecting the issue originates in the preprod dashboard.
 - **05:30 – 06:01** — Patches applied to the preprod dashboard in an attempt to fix server creation.
 - **06:01** — Login and account creation break on both preprod and production dashboards.
 - **06:01 – 13:00** — Team unable to connect to MariaDB to fix the issue: the root user's password had been rotated a few weeks earlier as a planned security measure, but the change was never documented or shared, leaving no known working credentials.
