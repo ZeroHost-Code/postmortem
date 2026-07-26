@@ -1,21 +1,14 @@
 # Postmortem: Database Authentication Outage & Server Creation Failure
-
 **Date:** July 23, 2026 | **Duration:** ~15:30 – 13:19 (Paris time), ~21h49 total | **Status:** Resolved
-
 ## Summary
-
 An attempt to fix a server creation issue on the preprod dashboard led to unrelated database and Wings configuration changes. Login and account creation on both preprod and production went down after 06:01 due to a previously rotated MariaDB root password that had not been documented, blocking the team from making further fixes. Once database access was restored, server creation remained broken due to a Wings permissions issue unrelated to the original changes made.
-
 ## Impact
-
 | Service | Status | Duration |
 |---|---|---|
 | Server creation | Down | ~15:30 (July 22) – 13:19 (July 23) (~21h49) |
 | Dashboard login (preprod & prod) | Down | ~06:01 – 13:15 (~7h14) |
 | Account creation | Down | ~06:01 – 13:15 (~7h14) |
-
 ## Timeline (Paris time)
-
 - **~15:30** — Due to a configuration change in Wings intended to enhance VPS security, server creation is failing during installation.
 - **~05:30** — The creation issue has been detected. Team begins investigating, suspecting the issue originates in the preprod dashboard.
 - **05:30 – 06:01** — Patches applied to the preprod dashboard in an attempt to fix server creation.
@@ -26,16 +19,13 @@ An attempt to fix a server creation issue on the preprod dashboard led to unrela
 - **13:15** — Services restarted; dashboard login and account creation restored on preprod and production.
 - **13:15 – 13:19** — Server creation still failing. Investigation of the Wings configuration reveals that server installation was writing to the `tmp` directory, which Wings did not have write permissions on.
 - **13:19** — Wings configuration updated to stop using `tmp` for server installation. Server creation fully restored.
-
 ## Root Cause
-
 Two independent issues combined into this incident:
-
 1. **Undocumented credential rotation:** The MariaDB root password had been changed weeks prior as a planned security measure, but the new password was not recorded or shared with the team. This left no way to access the database once login issues appeared, turning a contained problem into a multi-hour outage.
 2. **Wings permissions misconfiguration:** The actual cause of the original server creation failure was unrelated to the dashboard — Wings was configured to use the `tmp` directory for server installation, but lacked write permissions on that directory. Initial troubleshooting incorrectly focused on the dashboard, delaying identification of the real cause.
 
+**Why the Wings configuration changed:** the `tmp` directory change wasn't an isolated tweak — it was part of a broader set of changes made to harden VPS security. Those changes were applied without carefully reading the Wings documentation beforehand, and not enough attention was paid during the modification itself. As a result, when the server creation issue first appeared, the connection to this earlier security-hardening work wasn't made right away, which contributed to the initial troubleshooting being misdirected toward the dashboard.
 ## Resolution
-
 - MariaDB root password reset, restoring database access.
 - Password rotated for both the `root` and `zerohost` database users, with new credentials properly saved in the environment files.
 - Wings configuration updated to remove `tmp` as the server installation directory, resolving the underlying permissions issue.
